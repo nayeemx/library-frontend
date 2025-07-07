@@ -10,7 +10,7 @@ import type {
   ApiResponse 
 } from '../../types';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://library-backend-blond.vercel.app/api/';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 export const api = createApi({
   reducerPath: 'api',
@@ -74,7 +74,7 @@ export const api = createApi({
     }),
 
     getBorrowSummary: builder.query<ApiResponse<BorrowSummary[]>, void>({
-      query: () => '/borrow',
+      query: () => '/borrow-summary',
       providesTags: ['Borrow'],
     }),
   }),

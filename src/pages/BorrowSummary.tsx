@@ -8,6 +8,7 @@ const BorrowSummary = () => {
   const { data: summaryResponse, isLoading, error } = useGetBorrowSummaryQuery();
 
   const summary = summaryResponse?.data || [];
+  const validSummary = summary.filter(item => item && item.book && typeof item.totalQuantity === 'number');
 
   if (isLoading) {
     return (
@@ -65,7 +66,7 @@ const BorrowSummary = () => {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Total Books Borrowed</p>
-                <p className="text-2xl font-semibold text-gray-900">{summary.length}</p>
+                <p className="text-2xl font-semibold text-gray-900">{validSummary.length}</p>
               </div>
             </div>
           </div>
@@ -78,7 +79,7 @@ const BorrowSummary = () => {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Total Copies Borrowed</p>
                 <p className="text-2xl font-semibold text-gray-900">
-                  {summary.reduce((total, item) => total + item.totalQuantity, 0)}
+                  {validSummary.reduce((total, item) => total + item.totalQuantity, 0)}
                 </p>
               </div>
             </div>
@@ -92,8 +93,8 @@ const BorrowSummary = () => {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Average per Book</p>
                 <p className="text-2xl font-semibold text-gray-900">
-                  {summary.length > 0 
-                    ? Math.round(summary.reduce((total, item) => total + item.totalQuantity, 0) / summary.length)
+                  {validSummary.length > 0 
+                    ? Math.round(validSummary.reduce((total, item) => total + item.totalQuantity, 0) / validSummary.length)
                     : 0
                   }
                 </p>
@@ -127,33 +128,35 @@ const BorrowSummary = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {summary.map((item, index) => (
-                  <tr key={index} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">
-                        {item.book.title}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{item.book.isbn}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900 font-medium">
-                        {item.totalQuantity}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                        Borrowed
-                      </span>
-                    </td>
-                  </tr>
-                ))}
+                {validSummary.map((item, index) => {
+                  return (
+                    <tr key={index} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900">
+                          {item.book.title}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">{item.book.isbn}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900 font-medium">
+                          {item.totalQuantity}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                          Borrowed
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
 
-          {summary.length === 0 && (
+          {validSummary.length === 0 && (
             <div className="text-center py-12">
               <FaBook className="mx-auto h-12 w-12 text-gray-400" />
               <h3 className="mt-2 text-sm font-medium text-gray-900">No books borrowed</h3>
